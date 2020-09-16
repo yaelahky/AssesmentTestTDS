@@ -4,50 +4,64 @@ import {
   SafeAreaView,
   StyleSheet,
   View,
-  Text,
   Image,
   FlatList,
+  ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
+
+import {CardView} from './src/Components';
 
 const githubLogo = require('./src/Assets/img/githublogo.png');
 
 const App = () => {
   const [arrayRepo, setArrayRepo] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     getReposByUsername();
   }, []);
 
   const getReposByUsername = async () => {
+    setIsLoading(true);
     try {
       const response = await Axios.get(
         'https://api.github.com/users/yaelahky/repos?page=1',
       );
       if (response) {
         setArrayRepo(response?.data);
+        setIsLoading(false);
       }
     } catch (error) {
-      console.log(error);
+      setIsLoading(false);
     }
   };
 
-  const renderItem = ({item}) => (
-    <View style={styles.card}>
-      <Text style={styles.textTitle}>{item.name}</Text>
-      <Text>{item?.description ?? 'No desc'}</Text>
-    </View>
-  );
+  const renderItem = ({item}) => <CardView data={item} />;
   return (
     <SafeAreaView style={{height: '100%'}}>
       <View style={styles.header}>
         <Image source={githubLogo} style={styles.imageHeader} />
       </View>
-      <FlatList
-        style={{height: '100%'}}
-        data={arrayRepo}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
-      />
+      {isLoading ? (
+        <View style={{marginTop: 16}}>
+          <ActivityIndicator size="large" color="#000" />
+        </View>
+      ) : (
+        <FlatList
+          style={{height: '100%'}}
+          data={arrayRepo}
+          extraData={arrayRepo}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          refreshControl={
+            <RefreshControl
+              refreshing={isLoading}
+              onRefresh={getReposByUsername}
+            />
+          }
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -73,7 +87,7 @@ const styles = StyleSheet.create({
   },
   textTitle: {
     fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: 16,
   },
 });
 
