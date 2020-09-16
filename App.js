@@ -3,15 +3,12 @@ import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
-  View,
-  Image,
   FlatList,
   RefreshControl,
+  Text,
 } from 'react-native';
 
-import {CardView, SpinLoading} from './src/Components';
-
-const githubLogo = require('./src/Assets/img/githublogo.png');
+import {CardView, SpinLoading, Header} from './src/Components';
 
 const App = () => {
   const [arrayRepo, setArrayRepo] = useState([]);
@@ -25,10 +22,9 @@ const App = () => {
     setIsLoading(true);
     try {
       const response = await Axios.get(
-        'https://api.github.com/users/yaelahky/repos?page=1',
+        'https://api.github.com/users/yaelahky/repos?page=10',
       );
       if (response) {
-        console.log(response.data);
         setArrayRepo(response?.data);
         setIsLoading(false);
       }
@@ -37,12 +33,14 @@ const App = () => {
     }
   };
 
+  const renderEmptyData = () => (
+    <Text style={styles.textEmptyData}>Data kosong</Text>
+  );
+
   const renderItem = ({item}) => <CardView data={item} />;
   return (
     <SafeAreaView style={styles.height100}>
-      <View style={styles.header}>
-        <Image source={githubLogo} style={styles.imageHeader} />
-      </View>
+      <Header />
       {isLoading ? (
         <SpinLoading />
       ) : (
@@ -58,6 +56,7 @@ const App = () => {
               onRefresh={getReposByUsername}
             />
           }
+          ListEmptyComponent={renderEmptyData}
         />
       )}
     </SafeAreaView>
@@ -65,18 +64,13 @@ const App = () => {
 };
 
 const styles = StyleSheet.create({
-  header: {
-    elevation: 15,
-    width: '100%',
-    padding: 8,
-    backgroundColor: 'white',
-  },
-  imageHeader: {
-    height: 38,
-    width: 120,
-  },
   height100: {
     height: '100%',
+  },
+  textEmptyData: {
+    textAlign: 'center',
+    width: '100%',
+    marginTop: 16,
   },
 });
 
