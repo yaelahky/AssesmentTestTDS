@@ -1,18 +1,53 @@
-import React from 'react';
-import {SafeAreaView, StyleSheet, View, Text, Image} from 'react-native';
+import Axios from 'axios';
+import React, {useEffect, useState} from 'react';
+import {
+  SafeAreaView,
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  FlatList,
+} from 'react-native';
 
 const githubLogo = require('./src/Assets/img/githublogo.png');
 
 const App = () => {
+  const [arrayRepo, setArrayRepo] = useState([]);
+
+  useEffect(() => {
+    getReposByUsername();
+  }, []);
+
+  const getReposByUsername = async () => {
+    try {
+      const response = await Axios.get(
+        'https://api.github.com/users/yaelahky/repos?page=1',
+      );
+      if (response) {
+        setArrayRepo(response?.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const renderItem = ({item}) => (
+    <View style={styles.card}>
+      <Text style={styles.textTitle}>{item.name}</Text>
+      <Text>{item?.description ?? 'No desc'}</Text>
+    </View>
+  );
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{height: '100%'}}>
       <View style={styles.header}>
         <Image source={githubLogo} style={styles.imageHeader} />
       </View>
-      <View style={styles.card}>
-        <Text style={styles.textTitle}>Nama Repository</Text>
-        <Text>Link Repository</Text>
-      </View>
+      <FlatList
+        style={{height: '100%'}}
+        data={arrayRepo}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id.toString()}
+      />
     </SafeAreaView>
   );
 };
@@ -34,7 +69,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginHorizontal: 16,
     borderRadius: 10,
-    marginVertical: 16,
+    marginTop: 10,
   },
   textTitle: {
     fontWeight: 'bold',
