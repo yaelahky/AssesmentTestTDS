@@ -22,7 +22,7 @@ const App = () => {
     setIsLoading(true);
     try {
       const response = await Axios.get(
-        'https://api.github.com/users/yaelahky/repos?page=10',
+        'https://api.github.com/users/yaelahky/repos?page=1',
       );
       if (response) {
         setArrayRepo(response?.data);
