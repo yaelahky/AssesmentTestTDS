@@ -1,16 +1,24 @@
 import React from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, Linking, Text, TouchableOpacity} from 'react-native';
 
-const CardView = ({data}) => (
-  <View style={styles.card}>
-    <Text style={styles.textTitle}>{data.name}</Text>
-    {data?.description ? (
-      <Text>{data.description}</Text>
-    ) : (
-      <Text style={styles.noDescription}>No Description</Text>
-    )}
-  </View>
-);
+const CardView = ({data}) => {
+  const handleOpenLink = () => {
+    Linking.openURL(data?.svn_url);
+  };
+  return (
+    <TouchableOpacity
+      activeOpacity={0.8}
+      style={styles.card}
+      onPress={handleOpenLink}>
+      <Text style={styles.textTitle}>{data?.name}</Text>
+      {data?.description ? (
+        <Text>{data.description}</Text>
+      ) : (
+        <Text style={styles.noDescription}>No Description</Text>
+      )}
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   card: {

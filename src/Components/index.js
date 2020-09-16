@@ -1,3 +1,4 @@
 import CardView from './CardView';
+import SpinLoading from './SpinLoading';
 
-export {CardView};
+export {CardView, SpinLoading};
